@@ -57,69 +57,6 @@ end
 
 
 
-
-### TDVP type declarations and constructors ###
-
-
-
-function TDVPMatrices(sys::TDVPSystem)
-    type = ComplexF64
-    #α = zeros(type, sys.nmodes)
-    dims = 2 .* (sys.ord .+1)
-    prdims = prod(dims)
-    #ρ = zeros(type, prdims, prdims)
-
-    S, H = [SparseArray{type}(undef, prdims, prdims) for i ∈ 1:2]
-    L, Ldag, LdagL = [SparseArray{type}(undef, prdims, prdims, length(sys.lossoperators)) for i ∈ 1:3]
-    κᵣ, a, aH = [SparseArray{type}(undef, prdims, prdims, sys.nmodes) for i ∈ 1:3]
-    aL, aLdagL = [SparseArray{type}(undef, prdims, prdims, length(sys.lossoperators), sys.nmodes) for i ∈ 1:2]
-    κₗᵣ = SparseArray{type}(undef, prdims, prdims, sys.nmodes, sys.nmodes)
-
-    return TDVPMatrices(sys, S, H, κᵣ, κₗᵣ, L, Ldag, LdagL, a, aH, aL, aLdagL)
-end
-
-
-
-function TDVPFunction(sys::TDVPSystem)
-    H = sys.hamiltonian
-    J = sys.lossoperators
-    ord = sys.ord
-    nmodes = sys.nmodes
-
-    resh = reshape_basis
-    to_b = tobasisaugmented
-    build_func_kwargs = Dict(:expression => false,
-                            :lineumbers =>false,
-                            :skipzeros => true,
-                            :cse => true)
-                           # force_SA => true
-
-    a_ops = [QuantumCumulants.Destroy(FockSpace(:bosonic_mode), Symbol("a",aon), aon) for aon in 1:nmodes];
-
-    #strangely, doing it with the macro throws an error...
-    α = [SymbolicUtils.Sym{Number, Nothing}(Symbol("α",i), nothing) for i ∈ 1:nmodes]
-
-
-    @info("Compiling runtime-generated functions. This might take a while...")
-    S_f    = build_function(resh(to_b(1, α; ord = ord), nmodes), α; build_func_kwargs...)[2]
-    H_f    = build_function(resh(to_b(H, α; ord = ord), nmodes), α; build_func_kwargs...)[2]
-
-    κᵣ_f   = build_function(resh(right_derivative_matrix(α; ord = ord), nmodes), α; build_func_kwargs...)[2]
-    κₗᵣ_f  = build_function(resh(leftright_derivative_matrix(α; ord = ord), nmodes), α; build_func_kwargs...)[2]
-
-    L_f    = build_function(resh(to_b(J, α; ord = ord), nmodes), α; build_func_kwargs...)[2] #special ndims = 3
-    Ldag_f = build_function(resh(to_b(adjoint.(J), α; ord = ord), nmodes), α; build_func_kwargs...)[2] #special ndims =3
-    LdagL_f= build_function(resh(to_b(adjoint.(J) .* J, α; ord = ord), nmodes), α; build_func_kwargs...)[2] #special ndims =3
-
-    a_f    = build_function(resh(to_b(a_ops, α; ord = ord), nmodes), α; build_func_kwargs...)[2] #special ndims = 3
-    aH_f   = build_function(resh(to_b(map(x -> simplify(x*H), a_ops), α; ord = ord), nmodes), α; build_func_kwargs...)[2] #special ndims = 3
-
-    aL_f   = build_function(resh(to_b([simplify(a*L) for L ∈ J, a ∈ a_ops], α; ord = ord), nmodes), α; build_func_kwargs...)[2] #special ndims = 4
-    aLdagL_f =build_function(resh(to_b([simplify(a*L'*L) for L ∈ J, a ∈ a_ops], α; ord = ord), nmodes), α; build_func_kwargs...)[2] #special ndims = 4
-    @info("Done")
-    return TDVPFunction(sys,S_f,H_f, κᵣ_f, κₗᵣ_f, L_f, Ldag_f, LdagL_f, a_f, aH_f, aL_f, aLdagL_f)
-end
-
 function update!(matrices::TDVPMatrices, func::TDVPFunction, α::AbstractVector{<:Number})
     @inbounds for field ∈ [:S, :H, :κᵣ, :κₗᵣ, :J, :Jdag, :JdagJ, :a, :aH, :aJ, :aJdagJ]
         f! = getfield(func, field)
