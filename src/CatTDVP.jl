@@ -6,7 +6,6 @@ using TensorOperations
 using Symbolics
 using SymbolicUtils
 using LinearAlgebra
-using DifferentialEquations
 using QuantumOptics
 
 import RuntimeGeneratedFunctions
