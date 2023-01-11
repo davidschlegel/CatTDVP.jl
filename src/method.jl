@@ -147,6 +147,3 @@ end
 function DAEProblem(sys::TDVPSystem, α0::AbstractVector{ComplexF64}, ρ0::AbstractMatrix{ComplexF64}, tspan::Tuple; kwargs...)
     return DAEProblem(sys, [α0; ρ0...], tspan; kwargs...)
 end
-
-
-
