@@ -52,9 +52,9 @@ using Test
     end
     f_dae = make_ODE_problem(sys)
     dimρ = (2*(order[1]+1))^2
-    u0 = randn(ComplexF64, 1+dimρ)
-    du0 = randn(ComplexF64, 1+dimρ)
-    res = zeros(ComplexF64, 1+dimρ)
+    u0 = randn(ComplexF64, 2+dimρ)
+    du0 = randn(ComplexF64, 2+dimρ)
+    res = zeros(ComplexF64, 2+dimρ)
     @test_nowarn f_dae(res, u0, du0, 0.0, 0.0)
     @test !iszero(res)
 end
