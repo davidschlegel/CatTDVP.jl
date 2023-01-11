@@ -23,7 +23,7 @@ export overlapmatrix, tocatbasis, tobasisaugmented, tobasisaugmented!,
     leftright_derivative_matrix!, leftright_derivative_matrix, reshape_basis
 #from method.jl
 export liouvillian!, liouvillian, liouvillianderivative!, liouvillianderivative, update!, make_ODE_problem,
-        DAEProblem
+        TDVPProblem
 #from qointerface.jl
 export bargmanstate, bargmanstate!, barg_basis, to_barg_basis, barg_to_fock
 
