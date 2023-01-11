@@ -4,12 +4,13 @@ authors = ["David Schlegel <schlegel.david.ds@gmail.com>"]
 version = "0.1.0"
 
 [deps]
+DifferentialEquations = "0c46a032-eb83-5123-abaf-570d42b7fbaa"
 LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
 QuantumCumulants = "35bcea6d-e19f-57db-af74-8011de6c7255"
 QuantumOptics = "6e0679c1-51ea-5a7c-ac74-d61b76210b0c"
 RuntimeGeneratedFunctions = "7e49a35a-f44a-4d26-94aa-eba1b4ca6b47"
-TensorOperations = "6aa20fa7-93e2-5fca-9bc0-fbd0db3c71a2"
 SparseArrayKit = "a9a3c162-d163-4c15-8926-b8794fbefed2"
 SymbolicUtils = "d1185830-fcd6-423d-90d6-eec64667417b"
 Symbolics = "0c5d862f-8b57-4792-8d23-62f2024744c7"
+TensorOperations = "6aa20fa7-93e2-5fca-9bc0-fbd0db3c71a2"
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
