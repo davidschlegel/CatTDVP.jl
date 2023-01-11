@@ -53,34 +53,15 @@ b_fock = FockBasis(Nfock)
 
 ρ_barg = to_barg_basis(ρfock, α, sys.ord)  # conversion to TDVP basis
 
-
-u0 = [α; ρ_barg.data...]  # cast initial state into a suitable form for ODE solvers
-f_dae = make_ODE_problem(sys, u0)  # create ODEProblem
-
 tspan = (0.0, 2.0)  # define time span
 t_list = range(0.0, 2.0, 100)  # define times to save the output
 # create actual ODEProblem
 using DifferentialEquations
-prob = DAEProblem{true}(f_dae, similar(u0), u0, tspan, saveat=t_list; differential_vars=trues(length(u0)))
+prob = TDVPProblem(sys, α, ρ_barg.data, tspan; saveat=t_list)
 
 #solve the system
 sol = solve(prob, DFBDF(autodiff=false); initializealg=BrownFullBasicInit(), abstol=1e-6, reltol=1e-6);
 ```
 
-Once the solution is obtained, we can analyze the solution either in the original basis or convert back to the Fock basis. In the following, we convert back to the Fock basis and analyze the Van-Neuman entanglement entropy and the Wigner function of the reduced density matrix.
-
-```julia
-ρtdvp = map(i -> reshape(sol[3:end, i], dim, dim), 1:length(sol)) #reshape solution to matrix
-ρtdvp_fock = []
-for i ∈ eachindex(sol) #Convert solution to FockBasis
-    bargbassis = barg_basis(ρfock.basis_l, sol[1:2, i], order)
-    push!(ρtdvp_fock, barg_to_fock(Operator(bargbassis, bargbassis, ρtdvp[i])))
-end
-ρtdvp_red1 = [ptrace(ρ, 1) for ρ ∈ ρtdvp_fock] # reduced density matrices
-ρtdvp_red2 = [ptrace(ρ, 2) for ρ ∈ ρtdvp_fock] # reduced density matrices
-Stdvp =  [entropy_vn(ρ)/log(Nfock+1) for ρ ∈ ρtdvp_red1] #Van-Neuman entropy
-
-using Plots
-plot(sol.t, abs.(Stdvp), xlabel="t", label="entanglement entropy S")
-```
+Once the solution is obtained, we can analyze the solution either in the original basis or convert back to the Fock basis. 
 
