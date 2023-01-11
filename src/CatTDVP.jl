@@ -15,7 +15,7 @@ const RGF = RuntimeGeneratedFunctions.RuntimeGeneratedFunction
 const SpArray = SparseArrayKit.SparseArray
 
 #from tdvptype.jl
-export TDVPSystem, TDVPMatrices, TDVPFunction
+export TDVPSystem, TDVPMatrices, TDVPFunction, shape
 #from basis.jl
 export overlapmatrix, tocatbasis, tobasisaugmented, tobasisaugmented!,
     right_derivative_matrix!, right_derivative_matrix, left_derivative_matrix!, left_derivative_matrix,
