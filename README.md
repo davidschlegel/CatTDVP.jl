@@ -1,3 +1,6 @@
+
+<img src="https://user-images.githubusercontent.com/24460573/211853363-d4b685f6-46ae-485a-a76b-658fabd11cf5.svg" alt="drawing" width="200"/>
+
 # CatTDVP.jl
 
 CatTDVP.jl is a julia framework to efficiently simulate the quantum dynamics of bosonic cat qubits.
@@ -29,13 +32,13 @@ a₁ = Destroy(hf, Symbol("a",1), 1)
 a₂ = Destroy(hf, Symbol("a",2), 2)
 
 G₁, G₂, η₁, η₂, J = [4.0, 4.0, 1.0, 1.0, 1.0]
-# Hamiltonian: Two-photon drives in each mode plus a coherent hopping
+# Hamiltonian: Two-photon drive in each mode plus a coherent hopping
 H = G₁*(a₁^2 + (a₁')^2) + G₂*(a₂^2 + (a₂')^2) + J*(a₁*a₂' + a₁'*a₂)
 # Dissipators: Two-photon loss
 J = [a₁^2, a₂^2]
 rates = [η₁, η₂]
 
-# truncation order of the basis, i.e. the numbers of creation operators applied on the basis of each mode
+# truncation order of the basis, i.e. the number of creation operators applied on the basis of each mode
 order = [1, 1]; dim = prod(2 .* (order .+1))
 sys = TDVPSystem(H, J, order; rates=rates)  #create TDVPSystem
 
