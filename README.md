@@ -38,7 +38,8 @@ H = G₁*(a₁^2 + (a₁')^2) + G₂*(a₂^2 + (a₂')^2) + J*(a₁*a₂' + a₁
 J = [a₁^2, a₂^2]
 rates = [η₁, η₂]
 
-# truncation order of the basis, i.e. the number of creation operators applied on the basis of each mode
+# truncation order of the basis, i.e. the number of creation operators applied on
+# the basis of each mode
 order = [1, 1]; dim = prod(2 .* (order .+1))
 sys = TDVPSystem(H, J, order; rates=rates)  #create TDVPSystem
 
@@ -60,7 +61,8 @@ using DifferentialEquations
 prob = TDVPProblem(sys, α, ρ_barg.data, tspan; saveat=t_list)
 
 #solve the system
-sol = solve(prob, DFBDF(autodiff=false); initializealg=BrownFullBasicInit(), abstol=1e-6, reltol=1e-6);
+sol = solve(prob, DFBDF(autodiff=false); initializealg=BrownFullBasicInit(),
+            abstol=1e-6, reltol=1e-6);
 ```
 
 Once the solution is obtained, we can analyze the solution either in the original basis or convert back to the Fock basis. 
