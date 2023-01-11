@@ -140,7 +140,7 @@ end
 
 function TDVPProblem(sys::TDVPSystem, u0::AbstractVector{ComplexF64}, tspan::Tuple; kwargs...)
     f_dae = make_ODE_problem(sys)  # create ODEProblem
-    return DAEProblem{true}(f_dae, similar(u0), u0, tspan, differential_vars=trues(length(u0)), kwargs...)
+    return DAEProblem{true}(f_dae, zeros(u0), u0, tspan, differential_vars=trues(length(u0)), kwargs...)
 end
 
 
