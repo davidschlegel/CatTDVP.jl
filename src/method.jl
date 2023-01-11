@@ -138,3 +138,15 @@ end
 
 
 
+function DAEProblem(sys::TDVPSystem, u0::AbstractVector{ComplexF64}, tspan::Tuple; kwargs...)
+    f_dae = make_ODE_problem(sys)  # create ODEProblem
+    return DAEProblem{true}(f_dae, similar(u0), u0, tspan, saveat=t_list; differential_vars=trues(length(u0)), kwargs...)
+end
+
+
+function DAEProblem(sys::TDVPSystem, α0::AbstractVector{ComplexF64}, ρ0::AbstractMatrix{ComplexF64}, tspan::Tuple; kwargs...)
+    return DAEProblem(sys, [α0; ρ0...], tspan; kwargs...)
+end
+
+
+
