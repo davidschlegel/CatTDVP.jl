@@ -3,9 +3,10 @@ function liouvillian!(L::AbstractArray{M}, H::SparseArray{K, 2}, S::SparseArray{
                     JdagJ::SparseArray{K, 3}, γ::AbstractVector{<:Number},
                     ρ::AbstractArray{M}) where {K<:Number, M<:Number}
     #This function makes problems!!!
-    comm =  -im*(H*ρ*S - S*ρ*H)
-    dissipator = sum([γ[μ]*(J[:, :, μ]*ρ*Jdag[:, :, μ] -1/2*JdagJ[:,:, μ]*ρ*S -1/2*S*ρ*JdagJ[:, :, μ]) for μ ∈ eachindex(γ)])
-    L .= comm + dissipator
+    L .=  -im*(H*ρ*S - S*ρ*H)
+    @inbounds for μ ∈ eachindex(γ)
+        L .+ γ[μ]*(J[:, :, μ]*ρ*Jdag[:, :, μ] -1/2*JdagJ[:,:, μ]*ρ*S -1/2*S*ρ*JdagJ[:, :, μ])
+    end
     return nothing
 end
 
