@@ -3,7 +3,7 @@ Base.zero(t::Type{Expr}) = 0 #this should be already covered by SymbolicUtils
 Base.zero(t::Symbol) = 0
 Base.one(x::Type{Any}) = 1
 Base.zero(::Type{Any}) = 0
-Base.zero(t::Type{T} where T <: Union{Symbolics.Term, SymbolicUtils.Mul, SymbolicUtils.Add}) = 0
+Base.zero(t::Type{T} where T <: Union{Symbolics.Term, SymbolicUtils.Mul, SymbolicUtils.Add, Symbol, SymbolicUtils.Symbolic}) = 0
 Base.zero(::Type{DataType}) = 0
 Base.iszero(x::Union{Symbolics.Term, SymbolicUtils.Mul, SymbolicUtils.Add, SymbolicUtils.Sym}) = x === 0
 
@@ -343,21 +343,21 @@ function TDVPFunction(sys::TDVPSystem)
 
 
     @info("Compiling runtime-generated functions. This might take a while...")
-    S_f    = build_function(resh(to_b(1, α; ord = ord), nmodes), α; build_func_kwargs...)[2]
-    H_f    = build_function(resh(to_b(H, α; ord = ord), nmodes), α; build_func_kwargs...)[2]
+    S_f    = build_function(resh(to_b(1, α; ord = ord), nmodes), α; fname = "S_f", build_func_kwargs...)[2]
+    H_f    = build_function(resh(to_b(H, α; ord = ord), nmodes), α; fname = "H_f", build_func_kwargs...)[2]
 
-    κᵣ_f   = build_function(resh(right_derivative_matrix(α; ord = ord), nmodes), α; build_func_kwargs...)[2]
-    κₗᵣ_f  = build_function(resh(leftright_derivative_matrix(α; ord = ord), nmodes), α; build_func_kwargs...)[2]
+    κᵣ_f   = build_function(resh(right_derivative_matrix(α; ord = ord), nmodes), α; fname = "κᵣ_f", build_func_kwargs...)[2]
+    κₗᵣ_f  = build_function(resh(leftright_derivative_matrix(α; ord = ord), nmodes), α; fname = "κₗᵣ_f", build_func_kwargs...)[2]
 
-    L_f    = build_function(resh(to_b(J, α; ord = ord), nmodes), α; build_func_kwargs...)[2] #special ndims = 3
-    Ldag_f = build_function(resh(to_b(adjoint.(J), α; ord = ord), nmodes), α; build_func_kwargs...)[2] #special ndims =3
-    LdagL_f= build_function(resh(to_b(adjoint.(J) .* J, α; ord = ord), nmodes), α; build_func_kwargs...)[2] #special ndims =3
+    L_f    = build_function(resh(to_b(J, α; ord = ord), nmodes), α; fname = "L_f", build_func_kwargs...)[2] #special ndims = 3
+    Ldag_f = build_function(resh(to_b(adjoint.(J), α; ord = ord), nmodes), α; fname = "Ldag_f", build_func_kwargs...)[2] #special ndims =3
+    LdagL_f= build_function(resh(to_b(adjoint.(J) .* J, α; ord = ord), nmodes), α; fname = "LdagL_f", build_func_kwargs...)[2] #special ndims =3
 
-    a_f    = build_function(resh(to_b(a_ops, α; ord = ord), nmodes), α; build_func_kwargs...)[2] #special ndims = 3
-    aH_f   = build_function(resh(to_b(map(x -> simplify(x*H), a_ops), α; ord = ord), nmodes), α; build_func_kwargs...)[2] #special ndims = 3
+    a_f    = build_function(resh(to_b(a_ops, α; ord = ord), nmodes), α; fname = "a_f", build_func_kwargs...)[2] #special ndims = 3
+    aH_f   = build_function(resh(to_b(map(x -> simplify(x*H), a_ops), α; ord = ord), nmodes), α; fname = "aH_f", build_func_kwargs...)[2] #special ndims = 3
 
-    aL_f   = build_function(resh(to_b([simplify(a*L) for L ∈ J, a ∈ a_ops], α; ord = ord), nmodes), α; build_func_kwargs...)[2] #special ndims = 4
-    aLdagL_f =build_function(resh(to_b([simplify(a*L'*L) for L ∈ J, a ∈ a_ops], α; ord = ord), nmodes), α; build_func_kwargs...)[2] #special ndims = 4
+    aL_f   = build_function(resh(to_b([simplify(a*L) for L ∈ J, a ∈ a_ops], α; ord = ord), nmodes), α; fname = "aL_f", build_func_kwargs...)[2] #special ndims = 4
+    aLdagL_f =build_function(resh(to_b([simplify(a*L'*L) for L ∈ J, a ∈ a_ops], α; ord = ord), nmodes), α; fname = "aLdagL_f", build_func_kwargs...)[2] #special ndims = 4
     @info("Done")
     return TDVPFunction(sys,S_f,H_f, κᵣ_f, κₗᵣ_f, L_f, Ldag_f, LdagL_f, a_f, aH_f, aL_f, aLdagL_f)
 end
