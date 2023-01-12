@@ -31,9 +31,9 @@ hf = FockSpace(:bosonic_mode)
 a₁ = Destroy(hf, Symbol("a",1), 1)
 a₂ = Destroy(hf, Symbol("a",2), 2)
 
-G₁, G₂, η₁, η₂, J = [4.0, 4.0, 1.0, 1.0, 1.0]
+G₁, G₂, η₁, η₂, J_hop = [4.0, 4.0, 1.0, 1.0, 1.0]
 # Hamiltonian: Two-photon drive in each mode plus a coherent hopping
-H = G₁*(a₁^2 + (a₁')^2) + G₂*(a₂^2 + (a₂')^2) + J*(a₁*a₂' + a₁'*a₂)
+H = G₁*(a₁^2 + (a₁')^2) + G₂*(a₂^2 + (a₂')^2) + J_hop*(a₁*a₂' + a₁'*a₂)
 # Dissipators: Two-photon loss
 J = [a₁^2, a₂^2]
 rates = [η₁, η₂]
@@ -61,8 +61,8 @@ using DifferentialEquations
 prob = TDVPProblem(sys, α, ρ_barg.data, tspan; saveat=t_list)
 
 #solve the system
-sol = solve(prob, DFBDF(autodiff=false); initializealg=BrownFullBasicInit(),
-            abstol=1e-6, reltol=1e-6);
+sol = solve(prob, DFBDF(autodiff=false, diff_type=:complex);
+initializealg=BrownFullBasicInit(), abstol=1e-6, reltol=1e-6);
 ```
 
 Once the solution is obtained, we can analyze the solution either in the original basis or convert back to the Fock basis. 
