@@ -138,12 +138,13 @@ end
 
 
 
-function TDVPProblem(sys::TDVPSystem, u0::AbstractVector{ComplexF64}, tspan::Tuple; kwargs...)
+function TDVPProblem(sys::TDVPSystem, u0::AbstractVector{ComplexF64}, tspan::Tuple{K, K} where K <:Real; kwargs...)
     f_dae = make_ODE_problem(sys)  # create ODEProblem
-    return DAEProblem{true}(f_dae, zeros(u0), u0, tspan, differential_vars=trues(length(u0)), kwargs...)
+    return DAEProblem{true}(f_dae, zeros(eltype(u0), length(u0)), u0, tspan, differential_vars=trues(length(u0)), kwargs...)
 end
 
 
-function TDVPProblem(sys::TDVPSystem, α0::AbstractVector{ComplexF64}, ρ0::AbstractMatrix{ComplexF64}, tspan::Tuple; kwargs...)
+function TDVPProblem(sys::TDVPSystem, α0::AbstractVector{ComplexF64}, ρ0::AbstractMatrix{ComplexF64}, tspan::Tuple{K, K} where K <:Real; kwargs...)\
+    ishermitian(ρ0)
     return TDVPProblem(sys, [α0; ρ0...], tspan; kwargs...)
 end
