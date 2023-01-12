@@ -16,7 +16,7 @@ To install Symbolics.jl, use the Julia package manager:
 
 ```julia
 julia> using Pkg
-julia> Pkg.add("https://github.com/davidschlegel/CatTDVP.jl")
+julia> Pkg.add(url="https://github.com/davidschlegel/CatTDVP.jl")
 ```
 
 
