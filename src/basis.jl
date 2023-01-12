@@ -307,17 +307,17 @@ end
 function TDVPMatrices(sys::TDVPSystem)
     type = ComplexF64
     #α = zeros(type, sys.nmodes)
-    dims = 2 .*(sys.ord .+1)
+    dims = 2 .* (sys.ord .+1)
     prdims = prod(dims)
     #ρ = zeros(type, prdims, prdims)
 
     S, H = [SparseArray{type}(undef, prdims, prdims) for i ∈ 1:2]
-    J, Jdag, JdagJ = [SparseArray{type}(undef, prdims, prdims, length(sys.lossoperators)) for i ∈ 1:3]
+    L, Ldag, LdagL = [SparseArray{type}(undef, prdims, prdims, length(sys.lossoperators)) for i ∈ 1:3]
     κᵣ, a, aH = [SparseArray{type}(undef, prdims, prdims, sys.nmodes) for i ∈ 1:3]
-    aJ, aJdagJ = [SparseArray{type}(undef, prdims, prdims, length(sys.lossoperators), sys.nmodes) for i ∈ 1:2]
+    aL, aLdagL = [SparseArray{type}(undef, prdims, prdims, length(sys.lossoperators), sys.nmodes) for i ∈ 1:2]
     κₗᵣ = SparseArray{type}(undef, prdims, prdims, sys.nmodes, sys.nmodes)
 
-    return TDVPMatrices(sys, S, H, κᵣ, κₗᵣ, J, Jdag, JdagJ, a, aH, aJ, aJdagJ)
+    return TDVPMatrices(sys, S, H, κᵣ, κₗᵣ, L, Ldag, LdagL, a, aH, aL, aLdagL)
 end
 
 
@@ -356,8 +356,8 @@ function TDVPFunction(sys::TDVPSystem)
     a_f    = build_function(resh(to_b(a_ops, α; ord = ord), nmodes), α; build_func_kwargs...)[2] #special ndims = 3
     aH_f   = build_function(resh(to_b(map(x -> simplify(x*H), a_ops), α; ord = ord), nmodes), α; build_func_kwargs...)[2] #special ndims = 3
 
-    aL_f   = build_function(resh(to_b([simplify(a*L) for L ∈ J for a ∈ a_ops], α; ord = ord), nmodes), α; build_func_kwargs...)[2] #special ndims = 4
-    aLdagL_f =build_function(resh(to_b([simplify(a*L'*L) for L ∈ J for a ∈ a_ops], α; ord = ord), nmodes), α; build_func_kwargs...)[2] #special ndims = 4
+    aL_f   = build_function(resh(to_b([simplify(a*L) for L ∈ J, a ∈ a_ops], α; ord = ord), nmodes), α; build_func_kwargs...)[2] #special ndims = 4
+    aLdagL_f =build_function(resh(to_b([simplify(a*L'*L) for L ∈ J, a ∈ a_ops], α; ord = ord), nmodes), α; build_func_kwargs...)[2] #special ndims = 4
     @info("Done")
     return TDVPFunction(sys,S_f,H_f, κᵣ_f, κₗᵣ_f, L_f, Ldag_f, LdagL_f, a_f, aH_f, aL_f, aLdagL_f)
 end
