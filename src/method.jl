@@ -149,3 +149,10 @@ function TDVPProblem(sys::TDVPSystem, α0::AbstractVector{ComplexF64}, ρ0::Abst
     ishermitian(ρ0)
     return TDVPProblem(sys, [α0; ρ0...], tspan; kwargs...)
 end
+
+function to_α_ρ(sys::TDVPSystem, sol)
+    nmodes = sys.nmodes
+    ord = sys.ord
+    dimρ =  prod(2 .* (ord .+ 1))
+    return sol[1:nmodes, :], map(i -> reshape(sol[nmodes+1:end, i], dimρ, dimρ), eachindex(sol))
+end
